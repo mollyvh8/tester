@@ -6,3 +6,4 @@ webdriver-manager
 python-dotenv
 langchain
 flask
+gunicorn # Needed for Heroku deployment
