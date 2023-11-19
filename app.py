@@ -9,18 +9,7 @@ import streamlit as st
 from PyPDF2 import PdfReader
 from langchain.prompts import PromptTemplate
 from langchain.llms import OpenAI
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service as ChromeService
-from webdriver_manager.chrome import ChromeDriverManager
-from selenium.webdriver.common.by import By
-import time
-from random import randint
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service as ChromeService
-from webdriver_manager.chrome import ChromeDriverManager
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait  # Add this import
-from selenium.webdriver.support import expected_conditions as EC  # Add this import
+import requests  # Import requests
 import os
 
 # Set your OpenAI API key
@@ -67,15 +56,17 @@ def main():
         driver.quit()
         return job_listings
     
-    # Button to trigger job search
+     # Button to trigger job search
     if st.button('Search Jobs'):
         if job_title_input and job_location_input:
-            job_listings = scrape_indeed(job_title_input, job_location_input)
-            if job_listings:
+            # Make a GET request to the Flask app
+            response = requests.get(f"http://localhost:5000/scrape_jobs?title={job_title_input}&location={job_location_input}")
+            if response.ok:
+                job_listings = response.json()
                 for title, link in job_listings:
                     st.markdown(f"[{title}]({link})", unsafe_allow_html=True)
             else:
-                st.write("No job listings found.")
+                st.write("No job listings found or error in fetching data.")
         else:
             st.write("Please enter both job title and location.")
 
